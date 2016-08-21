@@ -32,6 +32,7 @@
       </propertyfile>
       <property file="./build.properties"/>
 
+  	  <echo message= "Version ${version.number}"/>
       <echo message= "Build ${build.number}"/>
 
       <!-- replace the build.number token in ChordConstants -->
@@ -41,7 +42,8 @@
             <include name="ChordVersion.java"/>
         </fileset>
         <filterset>
-           <filter token="buildnumber" value="${build.number}"/>
+            <filter token="versionnumber" value="${version.number}"/>
+            <filter token="buildnumber" value="${build.number}"/>
         </filterset>
       </copy>
 
