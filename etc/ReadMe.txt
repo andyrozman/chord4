@@ -1,4 +1,4 @@
-This is a description of a utility called CHORD developped by
+This is a description of a utility called CHORD developed by
 Martin Leclerc and  Mario Dorion 
  
 
@@ -29,7 +29,7 @@ A Java 2 Runtime of at least version 1.3.1 is required
 Find one you like at http://www.javasoft.com/j2se
 
 ===== CREDITS =====
-CHORD has been developped and is still being maintained by Martin
+CHORD has been developed and is still being maintained by Martin
 Leclerc and Mario Dorion. 
 
 We would like to thanks the following individuals:

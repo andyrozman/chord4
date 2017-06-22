@@ -35,7 +35,7 @@ public class Params
 	{
 		props = new Properties();
 		// get the String that specifies expiration date
-		InputStream is = props.getClass().getResourceAsStream("/chord.properties");
+		InputStream is = props.getClass().getResourceAsStream("/etc/chord.properties");
 		try
 		{
 			props.load(is);

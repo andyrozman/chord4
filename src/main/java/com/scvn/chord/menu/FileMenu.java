@@ -21,12 +21,14 @@
 package com.scvn.chord.menu;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.io.*;
 
 import com.scvn.chord.ChordTextArea;
 import com.scvn.chord.Chord4;
+import com.scvn.chord.Settings;
 
 
 public class FileMenu extends JMenu {
@@ -313,6 +315,7 @@ public class FileMenu extends JMenu {
              if (!discardModifications()) {
                  return;
              }
+             c4.getSettings().save();
              System.exit(0);
              return;
          }

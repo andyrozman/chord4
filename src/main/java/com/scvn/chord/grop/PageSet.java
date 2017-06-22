@@ -21,7 +21,9 @@
  
 package com.scvn.chord.grop;
 
-import com.scvn.chord.Logger;
+import java.util.logging.Logger;
+
+import com.scvn.chord.Chord4;
 
 /**
  * Insert the type's description here.
@@ -29,12 +31,14 @@ import com.scvn.chord.Logger;
  * @author
  */
 public class PageSet extends java.util.Vector {
+	private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
     /**
      * PageSet constructor comment.
      */
     public PageSet() {
         super();
-        Logger.debug("New page set created");
+        LOGGER.fine("New page set created");
     }
     /**
      * PageSet constructor comment.
@@ -42,7 +46,7 @@ public class PageSet extends java.util.Vector {
      */
     public PageSet(int initialCapacity) {
         super(initialCapacity);
-        Logger.debug("New page set created");
+        LOGGER.fine("New page set created");
     }
     /**
      * PageSet constructor comment.
@@ -51,7 +55,7 @@ public class PageSet extends java.util.Vector {
      */
     public PageSet(int initialCapacity, int capacityIncrement) {
         super(initialCapacity, capacityIncrement);
-        Logger.debug("New page set created");
+        LOGGER.fine("New page set created");
     }
     /**
      * PageSet constructor comment.
@@ -59,7 +63,7 @@ public class PageSet extends java.util.Vector {
      */
     public PageSet(java.util.Collection c) {
         super(c);
-        Logger.debug("New page set created");
+        LOGGER.fine("New page set created");
     }
     /**
      * Insert the method's description here.
@@ -85,6 +89,6 @@ public class PageSet extends java.util.Vector {
     public void removeAllElements()
     {
         super.removeAllElements();
-        Logger.debug("Page set flushed");
+        LOGGER.fine("Page set flushed");
     }
 }

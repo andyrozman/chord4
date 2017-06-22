@@ -28,6 +28,7 @@ import java.awt.image.*;
 import java.awt.print.*;
 import java.text.*;
 import java.util.*;
+import java.util.logging.Logger;
 import java.awt.font.*;
 import java.awt.event.*;
 import java.io.*;
@@ -38,6 +39,8 @@ import com.scvn.chord.*;
 
 public class C4Renderer implements Printable, Pageable, ChordConstants {
     //, ComponentListener  {
+	private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
     static final int MAXNOTE = 8;
     static final double SCREEN_RES = 72.0;
     BufferedImage bufferedImage;
@@ -577,7 +580,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
     }
 /* --------------------------------------------------------------------------------*/
     public void doTranslate(double vert, double horiz) {
-        Logger.debug("changing translation");
+        LOGGER.fine("changing translation");
     }
 /*--------------------------------------------------------------------------------*/
     void drawChords() {
@@ -738,7 +741,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
     }
 /* --------------------------------------------------------------------------------*/
     void openPage() {
-        //Logger.debug("renderer Creating page");
+        //LOGGER.fine("renderer Creating page");
         currentPage = new Page();
         // PrintGraphics do not have a preset font
         useTextFont();
@@ -756,7 +759,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
      */
     public int print(Graphics g, PageFormat pf, int pagenum) {
         // not on screen
-        //        Logger.debug("Renderer.print:" +pagenum);
+        //        LOGGER.fine("Renderer.print:" +pagenum);
         Graphics2D g2d = (Graphics2D) g;
         Page p = getPageSet().getPage(pagenum);
         if (p == null) {
@@ -905,7 +908,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
             chordFont = new Font(settings.getChordFontName(), Font.ITALIC, size);
             settings.setChordSize(size);
         } else {
-//           Logger.debug("Chord size KEPT at " +size);
+//           LOGGER.fine("Chord size KEPT at " +size);
         }
     }
 /* --------------------------------------------------------------------------------*/
@@ -1074,7 +1077,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
         width = (int) pf.getImageableWidth();
 
         // derivations
-        // bottom triggers the page footer. that is positionned at bottom+20
+        // bottom triggers the page footer. that is positioned at bottom+20
         // see doPageNumbering
         bottom = (int) (pf.getImageableY() + pf.getImageableHeight() - titleHeight - footerHeight);
         vpos = top;
@@ -1103,25 +1106,29 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
         usedChords = new ChordVector();
         getPageSet().removeAllElements();
 // setup toc
+        LOGGER.fine("set up toc");
         Collator coll = Collator.getInstance();
         coll.setStrength(Collator.SECONDARY);
         toc = new TreeMap(coll);
         /* complete some derivations after parsing options */
 
         if (userPageFormat == null) {
-            Logger.debug("No page format set !");
+            LOGGER.fine("No page format set !");
             return;
         }
 
         nColumns = 0;
-        KnownChord.init(settings.getGridSize());
+        LOGGER.fine("init KnownChord");
+        //KnownChord.init(settings.getGridSize());
 
 
         /* File Processing */
+        LOGGER.fine("initPage");
         initPage();
         chordFont = null;
         textFont = null;
         monoFont = null;
+        LOGGER.fine("reset settings");
 
         settings.reset(CURRENT);
 
@@ -1129,6 +1136,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
         setTextFont(settings.getTextSize());
         setMonoFont(settings.getTextSize());
         chordInc = settings.getChordSize() * 1.5;
+        LOGGER.fine("invalidateRendering");
         invalidateRendering();
     }
 /*--------------------------------------------------------------------------------*/
@@ -1169,6 +1177,7 @@ public class C4Renderer implements Printable, Pageable, ChordConstants {
 /* --------------------------------------------------------------------------------*/
     public void setVisible(boolean v) {
         rFrame.setVisible(v);
+        rFrame.setCurrentPage(0);
     }
 
     public RenderingFrame getRenderingFrame() {

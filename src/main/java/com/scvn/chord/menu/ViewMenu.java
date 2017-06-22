@@ -21,13 +21,17 @@
 package com.scvn.chord.menu;
 
 import javax.swing.*;
+
 import java.awt.event.*;
+
 import com.scvn.chord.Chord4;
+import com.scvn.chord.menu.ProcessMenu.ProcessOptionsAction;
 
 
 public class ViewMenu extends JMenu implements ActionListener, WindowListener {
     private Chord4 c4;
     
+    Action actionViewRenderer;
     JCheckBoxMenuItem miViewRenderer, miViewDeft;
 
     static String buffer = new String();
@@ -36,6 +40,8 @@ public class ViewMenu extends JMenu implements ActionListener, WindowListener {
         super("View");
         this.c4 = c4;
         add(miViewRenderer = new JCheckBoxMenuItem("View Renderer"));
+        actionViewRenderer = new ViewRendererAction("Options", "graphics/Preview_24x24.png");
+        c4.getToolBar().add(actionViewRenderer).setToolTipText("Render");
         miViewRenderer.addActionListener(this);
         add(miViewDeft = new JCheckBoxMenuItem("View Deft"));
         miViewDeft.addActionListener(this);
@@ -54,6 +60,17 @@ public class ViewMenu extends JMenu implements ActionListener, WindowListener {
             return;
         }
     }
+    
+    class ViewRendererAction extends AbstractAction {
+        public ViewRendererAction(String name, String icon) {
+            super(name, new ImageIcon(ClassLoader.getSystemResource(icon)));
+        }
+        public void actionPerformed(ActionEvent event) {
+        	miViewRenderer.setSelected(!miViewRenderer.isSelected());
+        	c4.getRenderer().setVisible(miViewRenderer.isSelected());
+            return;
+         }
+     }
 
     public void windowOpened(WindowEvent e) {
     }

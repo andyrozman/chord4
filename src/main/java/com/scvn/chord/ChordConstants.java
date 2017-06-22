@@ -52,6 +52,7 @@ public interface ChordConstants {
 
     public static final String GRIDSIZE = "GridSize";
     public static final String NOGRIDS = "NoGrids";
+    public static final String SHOWSPLASH = "ShowSplash";
     public static final String NOEASYGRIDS = "NoEasyGrids";
 
     public static final String TRANSPOSITION = "Transposition";
@@ -75,6 +76,7 @@ public interface ChordConstants {
     public static final String  DefGridSize= "25";
     public static final String  DefNoGrids= "false";
     public static final String  DefNoEasyGrids= "false";
+    public static final String  DefShowSplash = "false";
 
     public static final String  DefTransposition= "0";
     public static final String  DefPagination= "1";

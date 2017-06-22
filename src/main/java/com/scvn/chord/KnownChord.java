@@ -187,10 +187,12 @@ public class KnownChord extends JComponent implements ChordConstants {
 
     /* --------------------------------------------------------------------------------*/
     static public void init(int gs) {
+    	Logger.debug("KnownChord.init gs=" + gs);
         gridSize = gs;
         f_space = gridSize / (nb_frets - 1);
         s_space = gridSize / (nb_strings - 1);
         dot_rad = (s_space - 1) / 2;
+        Logger.debug("KnownChord.init done");
     }
 
     public void paint(Graphics g) {

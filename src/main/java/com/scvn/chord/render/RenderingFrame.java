@@ -25,6 +25,7 @@ import com.scvn.chord.grop.*;
 import com.scvn.chord.*;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.awt.*;
 import java.awt.image.*;
@@ -46,10 +47,12 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
     JScrollPane scrollPane;
     JMenuBar mb;
     JMenu ViewMenu;
-    JMenuItem miNextPage, miPreviousPage, miGotoPage, miPrint, miPageSetup, miQuit;
+    JMenuItem miNextPage, miPreviousPage, miGotoPage, miPrint, miPageSetup, miRefresh, miQuit;
     BufferedImage bi;
     int cpage;
     RenderingPane rPane;
+    JToolBar toolBar;
+    Action actionNextPage, actionPrevPage, actionRefreshPage;
     /**
      * Insert the method's description here.
      * Creation date: (99-07-20 17:08:15)
@@ -59,10 +62,15 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
         this.c4 = c4;
         this.rend = rend;
 
+        toolBar = new JToolBar();
         ViewMenu = new JMenu("View");
         ViewMenu.add(miNextPage = new JMenuItem("Next Page"));
+        actionNextPage = new NextPageAction("Next Page", "graphics/Arrow (Down)_24x24.png");
+        toolBar.add(actionNextPage).setToolTipText("Next Page");
         miNextPage.addActionListener(this);
         ViewMenu.add(miPreviousPage = new JMenuItem("Previous Page"));
+        actionPrevPage = new PrevPageAction("Previous Page", "graphics/Arrow (Up)_24x24.png");
+        toolBar.add(actionPrevPage).setToolTipText("Previous Page");
         miPreviousPage.addActionListener(this);
         ViewMenu.add(miGotoPage = new JMenuItem("Go to page..."));
         miGotoPage.addActionListener(this);
@@ -73,6 +81,12 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
         miPrint.addActionListener(this);
         fileMenu.add(miPageSetup = new JMenuItem("Page Setup"));
         miPageSetup.addActionListener(this);
+        fileMenu.add(miRefresh = new JMenuItem("Refresh"));
+        actionRefreshPage = new RefreshPageAction("Refresh", "graphics/Arrow (Refresh)_24x24.png");
+        toolBar.add(actionRefreshPage).setToolTipText("Refresh");
+        miRefresh.addActionListener(this);
+        miPrint.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_R, Event.CTRL_MASK));
+        miPrint.addActionListener(this);
         fileMenu.add(miQuit = new JMenuItem("Close"));
         miQuit.addActionListener(this);
         miQuit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_W, Event.CTRL_MASK));
@@ -88,6 +102,7 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
         //  imageIcon = new ImageIcon();
         //  label =new JLabel(imageIcon);
         getContentPane().add(scrollPane);
+        getContentPane().add(toolBar, BorderLayout.NORTH);
         scrollPane.getViewport().add(rPane);
         
         //addWindowListener(this);
@@ -97,6 +112,34 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
         setBackground(Color.white);
         setSize(650, (11+1)*72);
     }
+    class NextPageAction extends AbstractAction {
+        public NextPageAction(String name, String icon) {
+            super(name, new ImageIcon(ClassLoader.getSystemResource(icon)));
+        }
+        public void actionPerformed(ActionEvent event) {
+        	setCurrentPage(Math.min(cpage + 1, rend.getPageSet().size()-1));
+            return;
+         }
+     }
+    class PrevPageAction extends AbstractAction {
+        public PrevPageAction(String name, String icon) {
+            super(name, new ImageIcon(ClassLoader.getSystemResource(icon)));
+        }
+        public void actionPerformed(ActionEvent event) {
+        	setCurrentPage(Math.max(0, cpage - 1));
+            return;
+         }
+     }
+    class RefreshPageAction extends AbstractAction {
+        public RefreshPageAction(String name, String icon) {
+            super(name, new ImageIcon(ClassLoader.getSystemResource(icon)));
+        }
+        public void actionPerformed(ActionEvent event) {
+        	rend.invalidateRendering();
+        	setCurrentPage(0);
+            return;
+         }
+     }
     /* --------------------------------------------------------------------------------*/
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() instanceof JMenuItem) {
@@ -106,11 +149,11 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
     /* --------------------------------------------------------------------------------*/
     public void doMenu(JMenuItem item) {
         if (item == miNextPage) {
-            setCurrentPage(cpage + 1);
+            setCurrentPage(Math.min(cpage + 1, rend.getPageSet().size()-1));
             return;
         }
         if (item == miPreviousPage) {
-            setCurrentPage(cpage - 1);
+            setCurrentPage(Math.max(0, cpage - 1));
             return;
         }
         if (item == miGotoPage) {
@@ -155,6 +198,11 @@ public class RenderingFrame extends JFrame implements ActionListener, KeyListene
             rend.setUserPageFormat(pf);
             setCurrentPage(0);
             return;
+        }
+        if (item == miRefresh) {
+        	rend.invalidateRendering();
+        	setCurrentPage(0);
+        	return;
         }
         if (item == miQuit) {
             setVisible(false);

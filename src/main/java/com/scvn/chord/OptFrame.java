@@ -47,7 +47,7 @@ public class OptFrame extends JFrame implements ActionListener, ChordConstants, 
     JComboBox iGridSize;
     JComboBox iLocale;
     JCheckBox iNoEasyGrids, iNoGrids, iLyricsOnly, iNumberLogical, iLeftFootEven;
-    JCheckBox iDoToc, iDoSubToc;
+    JCheckBox iDoToc, iDoSubToc, iShowSplash;
     JTextField iPageLabel;
     JTextArea iCopyright;
 
@@ -70,7 +70,7 @@ public class OptFrame extends JFrame implements ActionListener, ChordConstants, 
         gbc.anchor = GridBagConstraints.WEST;
         gbc.insets = new Insets(2,5,2,5);
         fontList = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-        String fontSizes[] = new String[] {"5", "8", "9", "10", "12", "14", "16", "18", "20", "24"};
+        String fontSizes[] = new String[] {"5", "8", "9", "10", "11", "12", "13", "14", "16", "18", "20", "24"};
 
         
         miscPanel = new JPanel();
@@ -127,8 +127,8 @@ public class OptFrame extends JFrame implements ActionListener, ChordConstants, 
         optPanel.setBorder(new TitledBorder(new LineBorder(Color.blue), "Options"));
         //		miscPanel.add(new JLabel("No grids for easy chords", JLabel.RIGHT));
         optPanel.add(iNoEasyGrids = new JCheckBox("No grids for easy chords"));
-
-        optPanel.add(new JLabel(""));
+        iShowSplash = new JCheckBox("Show splash");
+        optPanel.add(iShowSplash);
 
         iDoToc = new JCheckBox("Generate table of contents");
         iDoToc.addActionListener(this);
@@ -221,12 +221,15 @@ public class OptFrame extends JFrame implements ActionListener, ChordConstants, 
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         
         // locate default sig file
-        defaultSignatureObject = Params.getDefaultSignatureObject();
+// FIXME
+        //defaultSignatureObject = Params.getDefaultSignatureObject();
         update (null, null); // force init of gui values from Settings
     }
+    
 
     public void update(Observable o, Object arg) {
         //Logger.debug("OptFrame.update: key =[" + arg+"]");
+    	iShowSplash.setSelected(settings.getShowSplash());
         iTextFont.setSelectedItem(settings.getTextFontName());
         iTextSize.setSelectedItem(Integer.toString(settings.getTextSize()));
         iChordFont.setSelectedItem(settings.getChordFontName());
@@ -270,6 +273,7 @@ public class OptFrame extends JFrame implements ActionListener, ChordConstants, 
             settings.set(RT, GRIDSIZE,    (String)iGridSize.getSelectedItem(), false);
             settings.set(RT, NOGRIDS,     String.valueOf(iNoGrids.isSelected()), false);
             settings.set(RT, NOEASYGRIDS, String.valueOf(iNoEasyGrids.isSelected()), false);
+            settings.set(RT, SHOWSPLASH,  String.valueOf(iShowSplash.isSelected()), false);
             
             settings.set(RT, TRANSPOSITION,   (String)iTranspose.getSelectedItem(), false);
 //            settings.set(RT, PAGINATION,      (String)iPagination.getSelectedItem(), false);

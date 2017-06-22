@@ -22,12 +22,15 @@ package com.scvn.chord;
 
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.logging.Logger;
 
 public class ParsingErrorSet implements ChordConstants {
 
 //    TreeSet undefChords = new TreeSet();
     private static Vector syntaxErrors = new Vector();
     private static Vector undefErrors = new Vector();
+    private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
 
 
     public static void init() {
@@ -38,6 +41,7 @@ public class ParsingErrorSet implements ChordConstants {
 
 /* --------------------------------------------------------------------------------*/
     public static void addSyntaxError(int errType, String errMsg, Producer p) {
+    	LOGGER.fine("syntax error: " + errType + " msg=" + errMsg + " p=" + p);
         switch (errType) {
             case ERR_UNDEF_CHORD:
                 undefErrors.add(new ParsingError(errType, errMsg, p.getFileName(), p.getLineNumber()));

@@ -21,9 +21,13 @@
 package com.scvn.chord;
 
 import java.util.*;
+import java.util.logging.Logger;
+
 import com.scvn.chord.render.*;
 
 public class Parser implements ChordConstants {
+	private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
     private Producer producer;
     private C4Renderer renderer;
     //	private OptFrame optFrame;
@@ -104,6 +108,7 @@ public class Parser implements ChordConstants {
         String command, arg = null;
         
         command = directive;
+        LOGGER.fine("Command=" + command);
         int endOfCmd = directive.indexOf(':');
         if (endOfCmd >= 0) {
             command = directive.substring(0, endOfCmd).trim().toLowerCase();
@@ -208,7 +213,7 @@ public class Parser implements ChordConstants {
         }
         else if (command.equals("columns") || command.equals("col") && isArgOK(arg, true)) {
             i = Integer.parseInt(arg);
-            if ( i <= 1 ) {
+            if ( i <= 0 ) {
                 ParsingErrorSet.addSyntaxError(ERR_INV_COL_NUM, null, producer);
             }
             else {
@@ -221,13 +226,14 @@ public class Parser implements ChordConstants {
         }
         else {
             ParsingErrorSet.addSyntaxError(ERR_UNKNOWN_CMD, command, producer);
+            LOGGER.fine("Unknown Command=" + command);
             context.hasDirective = false;
         }
     }
     /* --------------------------------------------------------------------------------*/
     void doEol(Context context) {
         textLine = textLine.trim();
-        //Logger.debug("doEol:<"+textLine+">");
+        //LOGGER.fine("doEol:<"+textLine+">");
         if (context.inDirective)
             ParsingErrorSet.addSyntaxError(ERR_EOL_IN_DIR, null, producer);
         if (context.inChord)
@@ -270,9 +276,9 @@ public class Parser implements ChordConstants {
         //ParsingErrorSet ces = new ParsingErrorSet();
         int c;
         while ((c = producer.getChar()) != Producer.EOJ) {
-            //Logger.debug("got char:["+(char)c+"]="+c);
+            //LOGGER.fine("got char:["+(char)c+"]="+c);
             if (c == Producer.EOF) {
-                //Logger.debug("Parser got EOF");
+                //LOGGER.fine("Parser got EOF");
                 if (! context.inChordrc)
                 {
                 renderer.doEndOfSong();
@@ -282,7 +288,7 @@ public class Parser implements ChordConstants {
                 continue;
             }
             if (c == Producer.SOF ) {
-                //Logger.debug("Parser got SOF");
+                //LOGGER.fine("Parser got SOF");
                 if (! context.inChordrc) {
                     renderer.doStartOfSong();
                 }

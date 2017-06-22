@@ -23,9 +23,18 @@ package com.scvn.chord;
 import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.dnd.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.*;
+
 import javax.swing.*;
+
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import com.scvn.chord.render.*;
 import com.scvn.chord.menu.*;
@@ -34,11 +43,16 @@ import com.scvn.chord.deft.Deft;
 
 /**
  * @author Martin Leclerc
- * @version 4.0beta1
+ * @author James J Myers
+ * @version 4.1
  */
 public class Chord4 extends JFrame implements  DropTargetListener, ChordConstants, ChordVersion {
 
-    JMenuBar mb;
+	private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
+	Handler fileHandler = null;
+	
+	JMenuBar mb;
     JToolBar toolBar;
 
     FileMenu fileMenu;
@@ -80,12 +94,30 @@ public class Chord4 extends JFrame implements  DropTargetListener, ChordConstant
 //        if (daysLeft < 30) {
 //            JOptionPane.showMessageDialog(this, "License valid for " + daysLeft + " days.");
 //        }
-        initGUI();
-        new SplashWindow("/graphics/splash.jpg", this, 5000);
-
-        setStatus("Building knowledge base");
-
+        try {
+			fileHandler  = new FileHandler("./chord4.log");
+			LOGGER.addHandler(fileHandler);
+			fileHandler.setFormatter(new SimpleFormatter());
+			fileHandler.setLevel(Level.ALL);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        LOGGER.setLevel(Level.ALL);
+        LOGGER.info("Logger Name: "+LOGGER.getName());
+        
         settings = new Settings();
+        if (settings.getShowSplash()) {
+        	new SplashWindow("/graphics/splash.jpg", this, 5000);
+        }
+        initGUI();
+        setStatus("Building knowledge base");
+        //Logger.setDebug(true);
+        //Logger.setInfo(true);
+
         optFrame = new OptFrame(this);
         knownChords = new KnownChordVector();
         setStatus("Setting up the parser");
@@ -94,13 +126,13 @@ public class Chord4 extends JFrame implements  DropTargetListener, ChordConstant
 
 
         setStatus("Looking for user startup file");
-        readChordrc();
+
+        // FIXME
+        //readChordrc();
         setStatus("Ready.");
         setGUIEnabled(true);
         // required for proper initialization of D&D
         DropTarget dt = new DropTarget(ta1, this);
-
-
     }
 
     public void setTitle(String title) {
@@ -255,6 +287,17 @@ public class Chord4 extends JFrame implements  DropTargetListener, ChordConstant
         setSize(600, 700);
         setGUIEnabled(false);
         setVisible(true);
+        this.addWindowListener(new WindowAdapter() {
+       	 public void windowClosing(WindowEvent evt) {
+       	     onExit();
+       	 }
+       });
+    }
+    
+    public void onExit() {
+  	  System.err.println("Exit");
+  	  settings.save();
+  	  System.exit(0);
     }
 
     /* --------------------------------------------------------------------------------*/
@@ -269,8 +312,7 @@ public class Chord4 extends JFrame implements  DropTargetListener, ChordConstant
     public static void main(String[] args) {
         String version = System.getProperty("java.version");
         String vendor = System.getProperty("java.vendor");
-        Logger.debug("Chord 4 running under java version [" + version + " ] from [" + vendor + "]");
-
+        LOGGER.fine("Chord 4 running under java version [" + version + " ] from [" + vendor + "]");
         new Chord4();
     }
 
@@ -312,8 +354,10 @@ public class Chord4 extends JFrame implements  DropTargetListener, ChordConstant
         }
         setStatus("Starting to parse...");
         parser.setProducer(p);
-        //	System.out.println("Parser Set up");
+        LOGGER.log(Level.FINE, "Parser Set up");
+        setStatus("Start parse...");
         getRenderer().start();
+        setStatus("Parsing...");
         parser.processInput();
 
         setStatus("Done parsing");

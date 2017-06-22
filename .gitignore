@@ -1,2 +1,8 @@
 /bin/
 /classes/
+/lib/
+/dist/
+.idea/
+target/
+*.iml
+chord4.log*

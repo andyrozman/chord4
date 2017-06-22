@@ -35,7 +35,7 @@ public class HelpMenu extends JMenu implements ActionListener{
                 //look for a chord home
                 String basePath = System.getProperty("chord.home", "..");
                 String url = basePath + "/doc/index.html";
-                Logger.debug("Help file is ["+url+"]");
+                //Logger.debug("Help file is ["+url+"]");
                 File f = new File(url);
                 if (f.exists()) {
                     BrowserLauncher.openURL(url);

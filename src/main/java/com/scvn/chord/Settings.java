@@ -26,7 +26,12 @@
 
 package com.scvn.chord;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.Logger;
 /**
  *
  * @author  martin
@@ -34,16 +39,28 @@ import java.util.*;
  */
 public class Settings extends Observable implements ChordConstants {
     
-    private Hashtable optSets;
+    private Properties optSets, defaultProps;
+    private static final Logger LOGGER =
+	        Logger.getLogger(Chord4.class.getName());
     
     public Settings() {
-        optSets = new Hashtable();
-        optSets.put(SYSTEM, new Hashtable());
-        optSets.put(RC, new Hashtable());
-        optSets.put(RT, new Hashtable());
-        optSets.put(CURRENT, new Hashtable());
-        
+    	optSets = new Properties();
+    	FileInputStream in = null;
+    	// create application properties with default
         setSystemSettings();
+        defaultProps = optSets;
+        optSets = new Properties(defaultProps);
+        
+     // now load properties from last invocation
+    	try {
+			in = new FileInputStream("etc/chord.properties");
+			optSets.load(in);
+			in.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     public String toString() {
@@ -65,6 +82,7 @@ public class Settings extends Observable implements ChordConstants {
         
         set(SYSTEM,  GRIDSIZE, DefGridSize, false);
         set(SYSTEM,  NOGRIDS, DefNoGrids, false);
+        set(SYSTEM,  SHOWSPLASH, DefShowSplash, false);
         set(SYSTEM,  NOEASYGRIDS, DefNoEasyGrids, false);
         
         set(SYSTEM,  TRANSPOSITION, DefTransposition, false);
@@ -81,16 +99,28 @@ public class Settings extends Observable implements ChordConstants {
     }
     
     private String get(String src, String key) {
-        Hashtable srcHash = (Hashtable)(optSets.get(src));
-        return (String)(srcHash.get(key));
+        //Hashtable srcHash = (Hashtable)(optSets.get(src));
+        //return (String)(srcHash.get(key));
+    	return (optSets.getProperty(src + "." + key));
+    }
+    public void save() {
+    	FileOutputStream out;
+		try {
+			out = new FileOutputStream("chordProperties");
+			optSets.store(out, "---No Comment---");
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 //    public void set(String src, String key, String val) {
 //        set(src, key, val, true);
 //    }
     public void set(String src, String key, String val, boolean notify) {
-        Logger.debug("seetings.set hash="+src+"  key="+key + " val="+val);
-        Hashtable srcHash = (Hashtable)(optSets.get(src));
-        srcHash.put(key, val);
+        LOGGER.fine("seetings.set hash="+src+"  key="+key + " val="+val);
+        //Hashtable srcHash = (Hashtable)(optSets.get(src));
+        optSets.setProperty(src + '.' + key, val);
+        //srcHash.put(key, val);
         if (notify && src != CURRENT) { // Changes in settings local to a song need not be propagated
             setChanged();
             notifyObservers(key);
@@ -121,8 +151,15 @@ public class Settings extends Observable implements ChordConstants {
     }
     
     public void reset(String src) {
-        Hashtable srcHash = (Hashtable)(optSets.get(src));
-        srcHash.clear();
+    	// remove all entries starting with src.
+    	Enumeration<?> states;
+    	
+    	for (Enumeration str = optSets.propertyNames(); str.hasMoreElements();) {
+    		String key = (String) str.nextElement();
+    		if (key.startsWith(src + ".")) {
+        	   optSets.remove(key);
+           }
+        }
     }
     public String getTextFontName() {
         return get(TEXTFONTNAME);
@@ -144,10 +181,15 @@ public class Settings extends Observable implements ChordConstants {
         return Integer.parseInt(get(MONOSIZE));
     }
     public int getGridSize() {
+    	//LOGGER.fine("enter getGridSize");
+    	//LOGGER.fine("GRIDSIZE=" + get(GRIDSIZE));
         return Integer.parseInt(get(GRIDSIZE));
     }
     public boolean getNoGrids() {
         return Boolean.valueOf(get(NOGRIDS)).booleanValue();
+    }
+    public boolean getShowSplash() {
+    	return Boolean.valueOf(get(SHOWSPLASH)).booleanValue();
     }
     public boolean getNoEasyGrids() {
         return Boolean.valueOf(get(NOEASYGRIDS)).booleanValue();
@@ -208,5 +250,8 @@ public class Settings extends Observable implements ChordConstants {
     }
     public void setChordFontName(String name) {
         set(CHORDFONTNAME, name);
+    }
+    public void setShowSplash(boolean b) {
+    	set(SHOWSPLASH, (new Boolean(b)).toString());
     }
 }
